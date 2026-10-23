@@ -3,165 +3,288 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
 :root{--navy:#07101e;--orange:#ff6a00;--bg:#f5f7fb;--muted:#728096}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#142033;font-family:Arial,sans-serif}
-a{text-decoration:none;color:inherit}button,input,select{font:inherit}button{cursor:pointer}
+a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}button{cursor:pointer}
 .wrap{width:min(1440px,96%);margin:auto}
+.bar{background:var(--orange);color:#fff;text-align:center;padding:9px;font-size:13px;font-weight:bold;display:none}
 header{position:relative;z-index:60;background:var(--navy);color:#fff;border-bottom:3px solid var(--orange)}
 nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{font-size:25px;font-weight:900}.brand span{color:var(--orange)}
-.links{display:flex;gap:18px;align-items:center;font-size:12px;font-weight:bold}
+.brand{font-size:24px;font-weight:900}
+.links{display:flex;gap:14px;align-items:center;font-size:12px;font-weight:bold}
 .menu{display:none;background:none;border:1px solid #3a4a63;color:#fff;font-size:24px;border-radius:8px;padding:2px 12px}
-.btn{padding:12px 17px;border:0;border-radius:9px;font-weight:800;background:#e8edf5}
+.btn{padding:12px 17px;border:0;border-radius:9px;font-weight:800;background:#e8edf5;display:inline-block}
 .or{background:linear-gradient(135deg,#ff9c28,#ff5b00);color:#fff}
 .hero{color:#fff;background:linear-gradient(110deg,#07101e,#15243b);border-bottom:4px solid var(--orange);padding:35px 0}
-h1{font-size:clamp(38px,6vw,62px);line-height:1;margin:14px 0}h1 span{color:#ff8a1c}
+h1{font-size:clamp(34px,6vw,60px);line-height:1.05;margin:14px 0}
 .hero p{color:#d5dfed;line-height:1.6;font-size:14px}
 .search{display:flex;gap:5px;padding:5px;background:#fff;border-radius:30px;max-width:560px;margin-top:18px}
 .search input{flex:1;min-width:0;border:0;outline:0;padding:12px;background:transparent}
 .section{margin:28px auto}.section h2{margin:0 0 14px}
 .cats{display:grid;grid-template-columns:repeat(10,1fr);gap:10px}
-.cat{background:#fff;border:1px solid #e4eaf2;border-radius:12px;padding:14px 4px;font-size:11px;font-weight:bold}
-.cat b{display:block;font-size:24px}.cat.on{border-color:var(--orange)}
+.cat{background:#fff;border:1px solid #e4eaf2;border-radius:12px;padding:12px 4px;font-size:11px;font-weight:bold}
+.cat b{display:block;font-size:24px}.cat small{color:var(--muted);font-weight:normal}.cat.on{border-color:var(--orange);background:#fff4ea}
+.tools{display:flex;gap:10px;align-items:center;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.tools select{padding:8px;border-radius:8px;border:1px solid #d5dce8}
 .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 .card{background:#fff;border:1px solid #e4eaf2;border-radius:12px;overflow:hidden;position:relative}
-.photo{height:135px;background:#e8edf5;display:grid;place-items:center;font-size:45px}.photo img{width:100%;height:100%;object-fit:cover}
-.det{padding:11px}.det h3{font-size:12px;margin:0 0 6px}.loc{font-size:10px;color:var(--muted)}
+.photo{height:135px;background:#e8edf5;display:grid;place-items:center;font-size:45px;cursor:pointer}.photo img{width:100%;height:100%;object-fit:cover}
+.det{padding:11px}.det h3{font-size:12px;margin:0 0 6px;cursor:pointer}.loc{font-size:10px;color:var(--muted)}
 .price{color:#f15d0a;font-size:16px;font-weight:900;margin-top:8px}
 .badge{position:absolute;top:8px;left:8px;background:var(--orange);color:#fff;border-radius:5px;padding:4px 7px;font-size:9px;font-weight:bold;z-index:1}
 .wa{display:block;text-align:center;background:#0b9b64;color:#fff;padding:9px;margin:10px 0 6px;border-radius:6px;font-size:11px;font-weight:bold}
-.empty{grid-column:1/-1;background:#fff;padding:25px;text-align:center;border-radius:12px;color:var(--muted)}
-.note{background:var(--navy);color:#d3ddeb;padding:18px;border-radius:12px;font-size:13px;line-height:1.6}
+.empty{grid-column:1/-1;background:#fff;padding:25px;text-align:center;border-radius:12px;color:var(--muted);line-height:1.6}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step,.card2{background:#fff;border:1px solid #e4eaf2;border-radius:12px;padding:16px;font-size:13px;line-height:1.7}.step b{color:var(--orange)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.card2 h3{margin:0 0 8px}.card2 ul{margin:0;padding-left:18px}
+.about{background:#fff;border-radius:12px;padding:18px;font-size:14px;line-height:1.7;white-space:pre-line;margin-bottom:14px}
+.legal{background:#fff;border-radius:12px;padding:16px;font-size:13px;line-height:1.7;margin-bottom:10px}.legal ol{margin:0;padding-left:20px}
+details{background:#fff;border:1px solid #e4eaf2;border-radius:10px;padding:12px;margin:8px 0;font-size:13px;line-height:1.6}summary{font-weight:bold;cursor:pointer}
+.note{background:var(--navy);color:#d3ddeb;padding:18px;border-radius:12px;font-size:13px;line-height:1.6;margin-top:14px}
 footer{background:#050a12;color:#cdd6e4;padding:24px 0;border-top:3px solid var(--orange);font-size:12px;margin-top:28px}
+footer a{margin-right:14px;color:#ff9b42}
 .mo{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:99;padding:12px}.mo.on{display:grid}
-.mo form{background:#fff;border-radius:14px;padding:20px;width:min(440px,100%);max-height:92vh;overflow:auto}
-.mo input,.mo select{width:100%;padding:11px;margin:5px 0 10px;border:1px solid #d5dce8;border-radius:8px}
-.mo label{font-size:12px;font-weight:bold}
-#adm{display:none}.row{background:#fff;border-radius:10px;padding:10px;margin:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px}
-.row img{width:70px;height:70px;object-fit:cover;border-radius:8px}.row div{flex:1;min-width:180px}
-.row button{padding:8px 10px;font-size:12px}
+.mo .box{background:#fff;border-radius:14px;padding:20px;width:min(460px,100%);max-height:92vh;overflow:auto}
+.mo input,.mo select,.mo textarea,#adm input,#adm textarea{width:100%;padding:11px;margin:5px 0 10px;border:1px solid #d5dce8;border-radius:8px}
+.mo input[type=checkbox]{width:auto;margin:0 6px 0 0}
+.mo label,#adm label{font-size:12px;font-weight:bold}
+#adm{display:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stats div{background:#fff;border-radius:10px;padding:12px;text-align:center;font-size:12px}.stats b{display:block;font-size:22px;color:var(--orange)}
+.row{background:#fff;border-radius:10px;padding:10px;margin:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px}
+.row img{width:70px;height:70px;object-fit:cover;border-radius:8px}.row div{flex:1;min-width:180px;word-break:break-all}.row button{padding:8px 10px;font-size:12px}
+.set{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px}
 @media(max-width:1100px){.cats{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.menu{display:block}
 .links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--navy);flex-direction:column;align-items:stretch;padding:14px 4%;gap:0;border-bottom:3px solid var(--orange)}
 .links.open{display:flex}.links a{padding:13px 0;border-bottom:1px solid #1d2c44;font-size:14px}.links .btn{margin-top:12px}
-.grid{grid-template-columns:repeat(2,1fr);gap:8px}.cats{grid-template-columns:repeat(3,1fr);gap:7px}}
+.grid{grid-template-columns:repeat(2,1fr);gap:8px}.cats{grid-template-columns:repeat(3,1fr);gap:7px}.steps,.two{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
 </style></head><body>
-<header><nav class="wrap"><a class="brand" href="#home">🛍️ Soko<span>Flash</span></a>
+<div class="bar" id="bar"></div>
+<header><nav class="wrap"><a class="brand" href="#home" id="br">🛍️ SokoFlash</a>
 <button class="menu" id="menu" aria-label="Menu">☰</button>
-<div class="links" id="links"><a href="#home">Home</a><a href="#cats">Categories</a><a href="#items">Products</a><a href="#" id="auth">Login / Register</a><button class="btn or" onclick="sell()">+ Post an Ad</button></div></nav></header>
+<div class="links" id="links"><a href="#home">Home</a><a href="#cats">Categories</a><a href="#items">Products</a><a href="#about">About</a><a href="#safety">Safety</a><a href="#contact">Contact</a><a href="#" id="mine">My Ads</a><a href="#" id="admL">👑 Admin</a><a href="#" id="auth">Login / Register</a><button class="btn or" onclick="sell()">+ Post an Ad</button></div></nav></header>
 <main>
-<section class="hero" id="home"><div class="wrap"><h1>Buy Smart.<br><span>Sell Faster.</span></h1>
-<p>Phones, electronics, cars, fashion, gaming and more from sellers across Kenya.</p>
+<section class="hero" id="home"><div class="wrap"><h1 id="h1">Buy Smart. Sell Faster.</h1>
+<p>Phones, electronics, cars, fashion, gaming and more from sellers across Kenya. Contact sellers directly on WhatsApp.</p>
 <form class="search" id="sf"><input id="q" placeholder="What are you looking for today?"><button class="btn or">SEARCH</button></form></div></section>
 <section class="wrap section" id="cats"><h2>Shop by Category</h2><div class="cats" id="catBox"></div></section>
-<section class="wrap section" id="items"><h2>Trending Products 🔥</h2><div class="grid" id="grid"><div class="empty">Loading...</div></div></section>
-<section class="wrap section" id="adm"><h2>👑 Admin</h2><h3>All ads</h3><div id="admList"></div><h3>Reports</h3><div id="admRep"></div></section>
-<section class="wrap section"><div class="note">🛡️ Shop carefully: check the item and the seller before sending money. Never pay before you see the product.</div></section>
-</main>
-<footer><div class="wrap">© <span id="yr"></span> SokoFlash Kenya · Buy smart. Sell faster.</div></footer>
+<section class="wrap section" id="items"><h2>Products 🔥</h2>
+<div class="tools"><span id="cnt"></span><select id="sort"><option value="new">Newest</option><option value="lo">Price: low to high</option><option value="hi">Price: high to low</option></select></div>
+<div class="grid" id="grid"><div class="empty">Loading...</div></div></section>
+<section class="wrap section"><div class="stats"><div><b id="t_a">0</b>Live ads</div><div><b id="t_s">0</b>Sellers</div><div><b id="t_f">0</b>Featured</div><div><b id="t_c">0</b>Categories in use</div></div></section>
 
-<div class="mo" id="am"><form id="af"><h2 id="at">Login</h2>
+<section class="wrap section" id="about"><h2>About SokoFlash</h2><div class="about" id="ab"></div>
+<div class="steps"><div class="step"><b>1. Register</b><br>Sign up with your phone number and a password. Your number becomes your WhatsApp contact.</div><div class="step"><b>2. Post and pay</b><br>Add your ad, then pay KES <b class="pr"></b> online with M-Pesa or card. Your ad goes live once we confirm.</div><div class="step"><b>3. Get buyers</b><br>Buyers tap "Chat on WhatsApp" and message you directly.</div></div></section>
+
+<section class="wrap section" id="safety"><h2>Buy and Sell Safely</h2>
+<div class="two"><div class="card2"><h3>🛒 If you are buying</h3><ul><li>Meet in a busy public place, in daytime if you can.</li><li>Check the item well and test it before you pay.</li><li>Never send money before you see the item.</li><li>Be careful with prices that look too good to be true.</li><li>Bring a friend for expensive items like phones and cars.</li><li>For cars, check the logbook and ID of the owner.</li></ul></div>
+<div class="card2"><h3>💰 If you are selling</h3><ul><li>Use clear, real photos of your own item.</li><li>Write an honest title, price and description.</li><li>Never share your PIN or passwords with anyone.</li><li>Confirm the money is in your account before handing over the item.</li><li>Ignore buyers who send fake M-Pesa messages or overpay and ask for change.</li><li>Delete your ad (My Ads) once the item is sold.</li></ul></div></div>
+<div class="note">🚩 See something suspicious? Press <b>Report</b> on the ad and we will check it.</div></section>
+
+<section class="wrap section" id="rules"><h2>Not Allowed on SokoFlash</h2>
+<div class="legal"><ol><li>Weapons, ammunition and explosives</li><li>Illegal drugs and drug equipment</li><li>Stolen goods or items without a legal owner</li><li>Fake, counterfeit or copied products and fake documents</li><li>Adult or sexual content and services</li><li>Human or animal trafficking, and endangered animals or their parts</li><li>Scams, pyramid schemes, "send money to get money" offers</li><li>Prescription drugs without a licence, and dangerous chemicals</li><li>Anything else that breaks Kenyan law</li></ol><p>Ads that break these rules are removed and the seller can be blocked.</p></div></section>
+
+<section class="wrap section" id="faq"><h2>FAQ</h2>
+<details><summary>How much does it cost to post an ad?</summary>An ad costs KES <b class="pr"></b> and stays live for <b class="dy"></b> days. Featured ads cost KES <b class="fp"></b> extra and appear first.</details>
+<details><summary>How do I pay?</summary>After you press "Submit and Pay", a secure Paystack window opens. Pay with M-Pesa or card. Then we confirm your payment and your ad goes live.</details>
+<details><summary>How long until my ad shows?</summary>As soon as we confirm your payment. Open "My Ads" in the menu to see the status.</details>
+<details><summary>How do buyers contact me?</summary>Through WhatsApp, using the phone number you registered with. Make sure it is a number you use on WhatsApp.</details>
+<details><summary>Can I use a different WhatsApp number on my ad?</summary>No. Your ad always uses your registered number so buyers know who they are talking to.</details>
+<details><summary>I paid but my ad is not live</summary>Wait a little while we confirm. If it takes long, contact support on WhatsApp and send your Paystack reference or M-Pesa message.</details>
+<details><summary>What happens when my ad expires?</summary>It stops showing. Post a new ad to sell again.</details>
+<details><summary>How do I delete my ad?</summary>Open "My Ads" in the menu and press Delete.</details>
+<details><summary>Does SokoFlash handle payment or delivery of items?</summary>No. We only take the fee for posting the ad. Buyers and sellers agree on payment and meeting directly. Stay safe and follow the safety tips.</details>
+<details><summary>How do I report a scam?</summary>Press the 🚩 Report button on the ad, or message support on WhatsApp.</details></section>
+
+<section class="wrap section" id="terms"><h2>Terms of Use</h2>
+<div class="legal"><ol><li>SokoFlash is a platform that connects buyers and sellers. We do not own, sell, inspect or deliver the items.</li><li>Sellers must own the items they post and give true information, photos and prices.</li><li>You must not post anything listed under "Not Allowed".</li><li>Posting an ad has a fee, paid online through Paystack. An ad goes live after we confirm payment and stays live for the number of days shown. Fees are not refunded once an ad is approved. If we reject your ad, contact support.</li><li>Buyers and sellers deal directly. SokoFlash is not responsible for payments between them, quality, delivery or disputes.</li><li>We can reject, hide or delete any ad, and block any account, at any time.</li><li>You are responsible for your account and password.</li><li>By registering, you agree that your phone number is shown to buyers as your WhatsApp contact.</li><li>We may update these terms. Continuing to use the site means you accept them.</li></ol></div></section>
+
+<section class="wrap section" id="privacy"><h2>Privacy Policy</h2>
+<div class="legal"><ol><li><b>What we collect:</b> your name, phone number, password (stored securely by our login provider), the ads, photos and details you post, and the payment reference from Paystack.</li><li><b>Payments:</b> payments are handled by Paystack. We do not see or store your card details or M-Pesa PIN.</li><li><b>What is public:</b> your name, ad details, photos and WhatsApp number are shown on your ads.</li><li><b>How we use it:</b> to run the site, confirm payments, show your ads, let buyers contact you, review reports and keep the site safe.</li><li><b>Where it is stored:</b> on Google Firebase servers.</li><li><b>Sharing:</b> we do not sell your data. We may share information if the law requires it.</li><li><b>Your choices:</b> delete your ads any time in "My Ads", or contact support to ask for your account to be removed.</li></ol></div></section>
+
+<section class="wrap section" id="contact"><h2>Contact Us</h2>
+<div class="legal"><div id="ct"></div><p style="margin-top:12px"><a class="btn or" id="sup" target="_blank" rel="noopener">💬 Contact Support on WhatsApp</a></p></div></section>
+</main>
+<footer><div class="wrap"><p>© <span id="yr"></span> <span id="fn">SokoFlash</span> Kenya · Buy smart. Sell faster.</p><p><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#rules">Not Allowed</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></p></div></footer>
+
+<section class="wrap section" id="adm"><h2>👑 Admin Panel</h2>
+<div class="stats"><div><b id="s_p">0</b>Payments to confirm</div><div><b id="s_a">0</b>Live</div><div><b id="s_f">0</b>Featured</div><div><b id="s_r">0</b>Reports</div></div>
+<div class="set"><h3>⚙️ Site Settings</h3>
+<label>Site name</label><input id="e1" maxlength="30"><label>Tagline (big title)</label><input id="e2" maxlength="60">
+<label>About text</label><textarea id="e3" rows="4" maxlength="600"></textarea>
+<label>Support WhatsApp (07XX...)</label><input id="e4" type="tel"><label>Top announcement (empty = hide)</label><input id="e5" maxlength="120">
+<label>Contact email (optional)</label><input id="e6" type="email" maxlength="80"><label>Working hours (optional)</label><input id="e7" maxlength="80">
+<hr><label>Price per ad (KES)</label><input id="e9" type="number" min="1"><label>Extra for Featured (KES)</label><input id="e10" type="number" min="0"><label>Days an ad stays live</label><input id="e11" type="number" min="1">
+<button class="btn or" id="sv">Save Settings</button></div>
+<h3>💰 Payments to confirm</h3><p style="font-size:12px;color:#728096;line-height:1.5">Open Paystack Dashboard, Transactions. Find the reference below. It must say <b>Success</b> and the amount must match. Then press Approve.</p><div id="admPay"></div>
+<h3>All ads</h3><div id="admList"></div><h3>Reports</h3><div id="admRep"></div></section>
+
+<div class="mo" id="am"><form class="box" id="af"><h2 id="at">Login</h2>
 <div id="nb" style="display:none"><label>Your name</label><input name="name" maxlength="40"></div>
 <label>Phone number (07XX XXX XXX)</label><input name="phone" type="tel" required>
 <label>Password (min 6)</label><input name="pw" type="password" minlength="6" required>
+<p id="rn" style="font-size:12px;color:#728096;display:none">📱 This number will be your WhatsApp contact. Buyers will message you on it when you post an ad.</p>
 <button class="btn or" style="width:100%">Continue</button>
 <a href="#" id="sw" style="display:block;text-align:center;margin:12px 0;font-size:13px"></a>
 <button type="button" class="btn" id="ax" style="width:100%">Cancel</button></form></div>
 
-<div class="mo" id="pm"><form id="pf"><h2>Post an Ad</h2>
+<div class="mo" id="pm"><form class="box" id="pf"><h2>Post an Ad</h2>
 <label>Title</label><input name="title" maxlength="80" required>
 <label>Category</label><select name="category" id="pc"></select>
 <label>Price (KSh)</label><input name="price" type="number" min="1" required>
 <label>Location</label><input name="location" maxlength="60" required>
-<label>WhatsApp number</label><input name="wa" id="pw" type="tel" required>
+<label>Description</label><textarea name="desc" rows="3" maxlength="500"></textarea>
 <label>Photo</label><input id="img" type="file" accept="image/*">
-<p style="font-size:11px;color:#728096">Your ad goes live after review.</p>
-<button class="btn or" style="width:100%">Submit</button>
+<label style="display:block;margin:6px 0"><input type="checkbox" name="feat"> ⭐ Feature my ad (shows first) <span id="fx"></span></label>
+<p id="pwn" style="font-size:12px;color:#0b9b64;font-weight:bold"></p>
+<p style="font-size:12px;background:#fff4ea;padding:10px;border-radius:8px">💳 Fee: <b>KES <span class="pr"></span></b> for <span class="dy"></span> days. You pay with M-Pesa or card after you press Submit.</p>
+<button class="btn or" style="width:100%">Submit and Pay</button>
 <button type="button" class="btn" id="px" style="width:100%;margin-top:6px">Cancel</button></form></div>
+
+<div class="mo" id="dm"><div class="box"><div id="dc"></div><button class="btn" id="dx" style="width:100%;margin-top:10px">Close</button></div></div>
+<div class="mo" id="mm"><div class="box"><h2>My Ads</h2><div id="ml">...</div><button class="btn" id="mx" style="width:100%;margin-top:10px">Close</button></div></div>
 
 <script>
 firebase.initializeApp({apiKey:"AIzaSyBh3Zv2N2WVsXEkMzGgpmldZ9qamUAhGSo",authDomain:"mtaani-earn.firebaseapp.com",projectId:"mtaani-earn",storageBucket:"mtaani-earn.firebasestorage.app",messagingSenderId:"910785202691",appId:"1:910785202691:web:24b0273dda13fd78c41c36",measurementId:"G-TL5DYR9K6H"});
 const auth=firebase.auth(),db=firebase.firestore(),$=id=>document.getElementById(id);
-const ADMIN='0703182307',DOM='@sokoflash.app';   // namba ya admin
+const ADMIN='0703182307',DOM='@sokoflash.app';
+const PAYSTACK_KEY="pk_live_f5bafce512b6886d08e193be98fb5d38b79a1bba"; // public key tu
 const CATS=[["Phones","📱"],["Cars","🚘"],["Real Estate","🏠"],["Electronics","💻"],["Fashion","👟"],["Gaming","🎮"],["Furniture","🪑"],["Business","🏪"],["Digital Products","📦"],["Other","✨"]];
+const DEF={name:"SokoFlash",tag:"Buy Smart. Sell Faster.",about:"SokoFlash is a Kenyan marketplace where you can buy and sell phones, cars, fashion, electronics, property and more. Register with your phone number, post your ad, and buyers contact you directly on WhatsApp.",wa:"254703182307",note:"",email:"",hours:"",price:50,fprice:100,days:30};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 const norm=p=>{p=p.replace(/\D/g,"");return p.startsWith("0")?"254"+p.slice(1):p.startsWith("254")?p:"254"+p};
 const fmt=n=>"KSh "+Number(n).toLocaleString("en-KE");
-let list=[],cat="",user=null,reg=false,want=false,img="",unsubs=[];
+const TS=()=>firebase.firestore.FieldValue.serverTimestamp();
+let list=[],cat="",user=null,reg=false,want=false,img="",unsubs=[],S={...DEF},AL={},PAYS=[];
 $("yr").textContent=new Date().getFullYear();
-$("catBox").innerHTML=CATS.map(c=>`<button class="cat" data-c="${c[0]}"><b>${c[1]}</b>${c[0]}</button>`).join("");
 $("pc").innerHTML=CATS.map(c=>`<option>${c[0]}</option>`).join("");
+const myPhone=()=>user.email.split("@")[0];
+const isAdm=()=>!!user&&myPhone()===ADMIN;
+const live=p=>!p.until||p.until>Date.now();
+const setAll=(cls,v)=>document.querySelectorAll("."+cls).forEach(e=>e.textContent=v);
 
+// settings
+function applyS(){document.title=S.name+" Kenya | Buy and Sell";$("br").textContent="🛍️ "+S.name;$("fn").textContent=S.name;$("h1").textContent=S.tag;$("ab").textContent=S.about;
+ $("sup").href="https://wa.me/"+S.wa;$("bar").textContent=S.note;$("bar").style.display=S.note?"block":"none";
+ setAll("pr",S.price);setAll("dy",S.days);setAll("fp",S.fprice);$("fx").textContent="(+KES "+S.fprice+")";
+ $("ct").innerHTML=`<p>💬 WhatsApp: <b>0${esc(String(S.wa).slice(3))}</b></p>${S.email?`<p>✉️ Email: <b>${esc(S.email)}</b></p>`:""}${S.hours?`<p>🕒 Hours: <b>${esc(S.hours)}</b></p>`:""}<p>We reply as soon as we can.</p>`;
+ $("e1").value=S.name;$("e2").value=S.tag;$("e3").value=S.about;$("e4").value="0"+String(S.wa).slice(3);$("e5").value=S.note;$("e6").value=S.email;$("e7").value=S.hours;
+ $("e9").value=S.price;$("e10").value=S.fprice;$("e11").value=S.days}
+db.collection("sk_settings").doc("main").onSnapshot(s=>{S={...DEF,...(s.data()||{})};applyS()},()=>applyS());
+$("sv").onclick=async()=>{const n=(id,d)=>{const v=parseInt($(id).value);return isNaN(v)||v<0?d:v};
+ try{await db.collection("sk_settings").doc("main").set({name:$("e1").value.trim()||DEF.name,tag:$("e2").value.trim()||DEF.tag,about:$("e3").value.trim()||DEF.about,wa:norm($("e4").value),note:$("e5").value.trim(),email:$("e6").value.trim(),hours:$("e7").value.trim(),
+  price:Math.max(1,n("e9",50)),fprice:n("e10",100),days:Math.max(1,n("e11",30))});alert("Saved!")}catch(e){alert(e.message)}};
+
+// listings
 function render(){
- const q=$("q").value.trim().toLowerCase();
- const l=list.filter(p=>(p.title+" "+p.category+" "+p.location).toLowerCase().includes(q)&&(!cat||p.category===cat));
+ const q=$("q").value.trim().toLowerCase(),so=$("sort").value,base=list.filter(live);
+ const l=base.filter(p=>(p.title+" "+p.category+" "+p.location).toLowerCase().includes(q)&&(!cat||p.category===cat));
+ l.sort(so==="lo"?(a,b)=>a.price-b.price:so==="hi"?(a,b)=>b.price-a.price:(a,b)=>(!!b.featured-!!a.featured)||((b.t?.seconds||0)-(a.t?.seconds||0)));
+ $("cnt").textContent=(cat||"All")+": "+l.length+" ads";
+ $("catBox").innerHTML=CATS.map(c=>`<button class="cat${cat===c[0]?" on":""}" data-c="${c[0]}"><b>${c[1]}</b>${c[0]}<br><small>${base.filter(p=>p.category===c[0]).length} ads</small></button>`).join("");
+ $("t_a").textContent=base.length;$("t_s").textContent=new Set(base.map(p=>p.owner)).size;$("t_f").textContent=base.filter(p=>p.featured).length;$("t_c").textContent=new Set(base.map(p=>p.category)).size;
  $("grid").innerHTML=l.length?l.map(p=>`<article class="card">${p.featured?'<span class="badge">FEATURED</span>':""}
- <div class="photo">${p.image?`<img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy">`:"🛍️"}</div>
- <div class="det"><h3>${esc(p.title)}</h3><div class="loc">📍 ${esc(p.location)}</div><div class="price">${fmt(p.price)}</div>
- <a class="wa" href="https://wa.me/${encodeURIComponent(p.wa)}" target="_blank" rel="noopener">Contact Seller</a>
- <a class="loc" href="#" data-r="${esc(p.id)}">🚩 Report</a></div></article>`).join(""):'<div class="empty">No products yet.</div>';
-}
-db.collection("sk_listings").where("status","==","approved").onSnapshot(s=>{
- list=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(!!b.featured-!!a.featured)||((b.t?.seconds||0)-(a.t?.seconds||0)));render()},
- ()=>{$("grid").innerHTML='<div class="empty">Could not load. Check internet.</div>'});
-$("sf").onsubmit=e=>{e.preventDefault();render()};$("q").oninput=render;
-$("catBox").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=cat===b.dataset.c?"":b.dataset.c;
- document.querySelectorAll(".cat").forEach(x=>x.classList.toggle("on",x.dataset.c===cat));render();$("items").scrollIntoView({behavior:"smooth"})};
-$("grid").onclick=async e=>{const id=e.target.dataset.r;if(!id)return;e.preventDefault();
- const r=prompt("Why are you reporting this ad?");if(!r)return;
- try{await db.collection("sk_reports").add({listing:id,reason:r.slice(0,300),t:firebase.firestore.FieldValue.serverTimestamp()});alert("Thanks, we will check.")}catch{alert("Failed, try again.")}};
+ <div class="photo" data-d="${esc(p.id)}">${p.image?`<img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy">`:"🛍️"}</div>
+ <div class="det"><h3 data-d="${esc(p.id)}">${esc(p.title)}</h3><div class="loc">📍 ${esc(p.location)}</div><div class="loc">👤 ${esc(p.seller||"Seller")}</div><div class="price">${fmt(p.price)}</div>
+ <a class="wa" href="https://wa.me/${encodeURIComponent(p.wa)}" target="_blank" rel="noopener">💬 Contact Seller</a>
+ <a class="loc" href="#" data-r="${esc(p.id)}">🚩 Report</a></div></article>`).join("")
+ :`<div class="empty">No ads ${cat?"in "+esc(cat):"found"} yet.<br><a href="#" onclick="sell();return false" style="color:#ff6a00;font-weight:bold">Post the first one →</a></div>`}
+db.collection("sk_listings").where("status","==","approved").onSnapshot(s=>{list=s.docs.map(d=>({id:d.id,...d.data()}));render()},
+ e=>{$("grid").innerHTML=`<div class="empty">Could not load ads (${esc(e.code)}).<br>Admin: publish the Firebase rules first.</div>`});
+$("sf").onsubmit=e=>{e.preventDefault();render()};$("q").oninput=render;$("sort").onchange=render;
+$("catBox").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=cat===b.dataset.c?"":b.dataset.c;render();$("items").scrollIntoView({behavior:"smooth"})};
+$("grid").onclick=async e=>{
+ const r=e.target.dataset.r;
+ if(r){e.preventDefault();const t=prompt("Why are you reporting this ad?");if(!t)return;
+  try{await db.collection("sk_reports").add({listing:r,reason:t.slice(0,300),t:TS()});alert("Thanks, we will check.")}catch{alert("Failed, try again.")}return}
+ const d=e.target.closest("[data-d]");if(!d)return;const p=list.find(x=>x.id===d.dataset.d);if(!p)return;
+ $("dc").innerHTML=`${p.image?`<img src="${esc(p.image)}" style="width:100%;border-radius:10px;max-height:300px;object-fit:cover">`:""}
+ <h2>${esc(p.title)}</h2><div class="price" style="font-size:22px">${fmt(p.price)}</div>
+ <p class="loc" style="font-size:12px">📍 ${esc(p.location)} · ${esc(p.category)}<br>👤 Seller: ${esc(p.seller||"Seller")}</p><p style="font-size:14px;line-height:1.6;white-space:pre-line">${esc(p.desc||"No description.")}</p>
+ <a class="wa" style="font-size:14px;padding:12px" href="https://wa.me/${encodeURIComponent(p.wa)}?text=${encodeURIComponent("Hi, I saw your ad on "+S.name+": "+p.title)}" target="_blank" rel="noopener">💬 Chat on WhatsApp</a>
+ <p class="loc">Stay safe: see the item before you pay.</p>`;
+ $("dm").classList.add("on")};
+$("dx").onclick=()=>$("dm").classList.remove("on");
 
 // menu
 $("menu").onclick=()=>{const o=$("links").classList.toggle("open");$("menu").textContent=o?"✕":"☰"};
 $("links").onclick=e=>{if(e.target.closest("a,button")){$("links").classList.remove("open");$("menu").textContent="☰"}};
 
 // auth
-function mode(r){reg=r;$("at").textContent=r?"Register":"Login";$("nb").style.display=r?"block":"none";$("sw").textContent=r?"Already registered? Login":"New here? Register with your number"}
+function mode(r){reg=r;$("at").textContent=r?"Register":"Login";$("nb").style.display=r?"block":"none";$("rn").style.display=r?"block":"none";$("sw").textContent=r?"Already registered? Login":"New here? Register with your number"}
 const openAuth=r=>{mode(r);$("am").classList.add("on")};
 $("sw").onclick=e=>{e.preventDefault();mode(!reg)};$("ax").onclick=()=>{want=false;$("am").classList.remove("on")};
 $("af").onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),ph=norm(d.phone);
- if(ph.length!==12)return alert("Enter a valid Kenyan number.");
- const mail=("0"+ph.slice(3))+DOM;
- try{if(reg){const c=await auth.createUserWithEmailAndPassword(mail,d.pw);await c.user.updateProfile({displayName:(d.name||"").slice(0,40)})}
+ if(ph.length!==12)return alert("Enter a valid Kenyan number.");const mail=("0"+ph.slice(3))+DOM;
+ try{if(reg){const c=await auth.createUserWithEmailAndPassword(mail,d.pw);await c.user.updateProfile({displayName:(d.name||"").trim().slice(0,40)})}
   else await auth.signInWithEmailAndPassword(mail,d.pw);
   e.target.reset();$("am").classList.remove("on");if(want){want=false;setTimeout(sell,300)}
  }catch(er){alert(er.code==="auth/email-already-in-use"?"This number is already registered. Please login.":er.code==="auth/weak-password"?"Password is too short.":"Wrong number or password.")}};
 $("auth").onclick=e=>{e.preventDefault();user?auth.signOut():openAuth(false)};
-const phoneOf=u=>u.email.split("@")[0];
 auth.onAuthStateChanged(u=>{
- if(u&&!u.email.endsWith(DOM)){auth.signOut();return}   // watumiaji wa Mtaani Earn hawaingii hapa
- user=u;$("auth").textContent=u?"Logout ("+phoneOf(u)+")":"Login / Register";
- unsubs.forEach(f=>f());unsubs=[];const adm=!!u&&phoneOf(u)===ADMIN;$("adm").style.display=adm?"block":"none";
- if(adm)adminLoad()});
+ if(u&&!u.email.endsWith(DOM)){auth.signOut();return}
+ user=u;$("auth").textContent=u?"Logout ("+myPhone()+")":"Login / Register";
+ unsubs.forEach(f=>f());unsubs=[];$("adm").style.display=isAdm()?"block":"none";if(isAdm())adminLoad()});
+$("admL").onclick=e=>{e.preventDefault();if(!user){openAuth(false);return}if(!isAdm())return alert("Admin only. Login with the admin number.");$("adm").scrollIntoView({behavior:"smooth"})};
 
-// post ad
-window.sell=()=>{if(!user){want=true;openAuth(true);return}$("pw").value=phoneOf(user);$("pm").classList.add("on")};
+// post ad (WhatsApp = namba ya usajili), kisha Paystack
+window.sell=()=>{if(!user){want=true;openAuth(true);return}$("pwn").textContent="💬 Buyers will contact you on WhatsApp: "+myPhone()+" (your registered number)";$("pm").classList.add("on")};
 $("px").onclick=()=>$("pm").classList.remove("on");
 $("img").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();
  im.onload=()=>{const s=Math.min(1,600/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;
   c.getContext("2d").drawImage(im,0,0,c.width,c.height);img=c.toDataURL("image/jpeg",.7)};im.src=URL.createObjectURL(f)};
-$("pf").onsubmit=async e=>{e.preventDefault();if(!user)return;const d=Object.fromEntries(new FormData(e.target)),wa=norm(d.wa);
- if(wa.length!==12)return alert("Enter a valid Kenyan number.");
- try{await db.collection("sk_listings").add({title:d.title.trim(),category:d.category,price:Number(d.price),location:d.location.trim(),wa,image:img,
-  status:"pending",featured:false,owner:user.uid,t:firebase.firestore.FieldValue.serverTimestamp()});
-  e.target.reset();img="";$("pm").classList.remove("on");alert("Ad submitted! It will show after review.")}
- catch{alert("Failed. Try a smaller photo.")}};
+$("pf").onsubmit=async e=>{e.preventDefault();if(!user)return;const d=Object.fromEntries(new FormData(e.target)),feat=!!d.feat;
+ try{const ref=await db.collection("sk_listings").add({title:d.title.trim(),category:d.category,price:Number(d.price),location:d.location.trim(),desc:(d.desc||"").trim(),wa:norm(myPhone()),seller:(user.displayName||"Seller").slice(0,40),image:img,status:"unpaid",featured:false,wantFeat:feat,owner:user.uid,t:TS()});
+  e.target.reset();img="";$("pm").classList.remove("on");openPay(ref.id,feat)}
+ catch(er){alert("Failed ("+er.code+"). Try a smaller photo.")}};
+function openPay(id,feat){const amt=S.price+(feat?S.fprice:0);
+ if(typeof PaystackPop==="undefined")return alert("Payment could not load. Check your internet, then open My Ads and press Pay now.");
+ PaystackPop.setup({key:PAYSTACK_KEY,email:user.email,amount:amt*100,currency:"KES",ref:"SF"+Date.now()+Math.floor(Math.random()*1e4),
+  metadata:{custom_fields:[{display_name:"Listing",variable_name:"listing",value:id}]},
+  callback:r=>{savePay(id,amt,r.reference)},
+  onClose:()=>alert("Payment not completed. Open My Ads and press Pay now when you are ready.")}).openIframe()}
+async function savePay(id,amt,ref){
+ try{await db.collection("sk_payments").doc(ref).set({code:ref,listing:id,owner:user.uid,amount:amt,status:"pending",t:TS()});alert("Payment received! Your ad will go live once we confirm it.")}
+ catch(er){alert("You paid, but we could not save it. Please keep this reference and contact support: "+ref)}}
+
+// my ads
+$("mine").onclick=async e=>{e.preventDefault();if(!user){openAuth(false);return}$("mm").classList.add("on");$("ml").textContent="Loading...";
+ try{const [ls,ps]=await Promise.all([db.collection("sk_listings").where("owner","==",user.uid).get(),db.collection("sk_payments").where("owner","==",user.uid).get()]);
+  const pend=new Set(ps.docs.filter(d=>d.data().status==="pending").map(d=>d.data().listing));
+  $("ml").innerHTML=ls.empty?"You have no ads yet.":ls.docs.map(d=>{const x=d.data(),id=esc(d.id);let st;
+   if(x.status==="approved")st=live(x)?"✅ Live"+(x.until?" until "+new Date(x.until).toLocaleDateString("en-KE"):""):"⌛ Expired";
+   else if(pend.has(d.id))st="⏳ Payment being confirmed";else st="💳 Awaiting payment";
+   const pay=x.status!=="approved"&&!pend.has(d.id)?`<button class="btn or" data-pay="${id}" data-f="${x.wantFeat?1:0}">Pay now</button>`:"";
+   return `<div class="row"><div><b>${esc(x.title)}</b> · ${fmt(x.price)}<br>Status: <b>${st}</b></div>${pay}<button class="btn" style="background:#c0392b;color:#fff" data-del="${id}">Delete</button></div>`}).join("")}
+ catch(er){$("ml").textContent="Error: "+er.code}};
+$("ml").onclick=async e=>{const b=e.target;
+ if(b.dataset.pay){$("mm").classList.remove("on");openPay(b.dataset.pay,b.dataset.f==="1");return}
+ const id=b.dataset.del;if(!id||!confirm("Delete this ad?"))return;try{await db.collection("sk_listings").doc(id).delete();b.closest(".row").remove()}catch(er){alert(er.code)}};
+$("mx").onclick=()=>$("mm").classList.remove("on");
 
 // admin
+function drawPay(){const p=PAYS.filter(x=>x.status==="pending");$("s_p").textContent=p.length;
+ $("admPay").innerHTML=p.map(x=>{const l=AL[x.listing];return `<div class="row"><div>Ref: <b>${esc(x.code)}</b><br>KES ${esc(x.amount)}<br>Ad: ${esc(l?l.title:"(deleted)")}<br>👤 ${esc(l?l.seller:"")} ${l&&l.wantFeat?"· ⭐ wants Featured":""}</div>
+ <button class="btn or" data-a="pok" data-id="${esc(x.code)}" data-l="${esc(x.listing)}">✅ Approve</button><button class="btn" style="background:#c0392b;color:#fff" data-a="pno" data-id="${esc(x.code)}">Reject</button></div>`}).join("")||"None"}
 function adminLoad(){
- unsubs.push(db.collection("sk_listings").onSnapshot(s=>{$("admList").innerHTML=s.docs.map(d=>{const x=d.data(),id=esc(d.id);
-  return `<div class="row">${x.image?`<img src="${esc(x.image)}">`:""}<div><b>${esc(x.title)}</b> · ${fmt(x.price)}<br>${esc(x.category)} · ${esc(x.location)}<br>WA ${esc(x.wa)} · <b>${esc(x.status)}</b>${x.featured?" · ⭐":""}</div>
-  ${x.status!=="approved"?`<button class="btn or" data-a="ok" data-id="${id}">Approve</button>`:`<button class="btn" data-a="hide" data-id="${id}">Hide</button>`}
+ unsubs.push(db.collection("sk_listings").onSnapshot(s=>{const a=s.docs.map(d=>({id:d.id,...d.data()}));AL={};a.forEach(x=>AL[x.id]=x);
+  $("s_a").textContent=a.filter(x=>x.status==="approved"&&live(x)).length;$("s_f").textContent=a.filter(x=>x.featured).length;drawPay();
+  $("admList").innerHTML=a.map(x=>{const id=esc(x.id);return `<div class="row">${x.image?`<img src="${esc(x.image)}">`:""}<div><b>${esc(x.title)}</b> · ${fmt(x.price)}<br>${esc(x.category)} · ${esc(x.location)}<br>👤 ${esc(x.seller||"")} · WA ${esc(x.wa)} · <b>${esc(x.status)}</b>${x.featured?" · ⭐":""}${x.until?"<br>Until "+new Date(x.until).toLocaleDateString("en-KE"):""}</div>
+  ${x.status!=="approved"?`<button class="btn or" data-a="ok" data-id="${id}">Approve (free)</button>`:`<button class="btn" data-a="hide" data-id="${id}">Hide</button>`}
   <button class="btn" data-a="star" data-f="${x.featured?1:0}" data-id="${id}">${x.featured?"Unfeature":"⭐ Feature"}</button>
   <button class="btn" style="background:#c0392b;color:#fff" data-a="del" data-id="${id}">Delete</button></div>`}).join("")||"None"},e=>alert(e.message)));
- unsubs.push(db.collection("sk_reports").onSnapshot(s=>{$("admRep").innerHTML=s.docs.map(d=>{const x=d.data();
-  return `<div class="row"><div>Ad: ${esc(x.listing)}<br>${esc(x.reason)}</div><button class="btn" data-a="hide" data-id="${esc(x.listing)}">Hide ad</button><button class="btn" data-a="rdel" data-id="${esc(d.id)}">Dismiss</button></div>`}).join("")||"None"}))}
-$("adm").onclick=async e=>{const b=e.target.closest("[data-a]");if(!b)return;const id=b.dataset.id,L=db.collection("sk_listings").doc(id);
- try{const a=b.dataset.a;
-  if(a==="ok")await L.update({status:"approved"});
-  if(a==="hide")await L.update({status:"pending"});
+ unsubs.push(db.collection("sk_payments").onSnapshot(s=>{PAYS=s.docs.map(d=>d.data());drawPay()},e=>alert(e.message)));
+ unsubs.push(db.collection("sk_reports").onSnapshot(s=>{$("s_r").textContent=s.size;
+  $("admRep").innerHTML=s.docs.map(d=>{const x=d.data();return `<div class="row"><div>Ad: ${esc(x.listing)}<br>${esc(x.reason)}</div><button class="btn" data-a="hide" data-id="${esc(x.listing)}">Hide ad</button><button class="btn" data-a="rdel" data-id="${esc(d.id)}">Dismiss</button></div>`}).join("")||"None"}))}
+$("adm").onclick=async e=>{const b=e.target.closest("[data-a]");if(!b)return;const id=b.dataset.id,L=db.collection("sk_listings").doc(id),a=b.dataset.a,until=()=>Date.now()+S.days*864e5;
+ try{if(a==="ok")await L.update({status:"approved",until:until()});
+  if(a==="hide")await L.update({status:"unpaid"});
   if(a==="star")await L.update({featured:b.dataset.f!=="1"});
   if(a==="del"&&confirm("Delete this ad?"))await L.delete();
-  if(a==="rdel")await db.collection("sk_reports").doc(id).delete()}catch(er){alert(er.message)}};
+  if(a==="rdel")await db.collection("sk_reports").doc(id).delete();
+  if(a==="pok"){const lid=b.dataset.l,l=AL[lid];if(!l)return alert("Ad was deleted.");const u={status:"approved",until:until()};if(l.wantFeat)u.featured=true;
+   const bt=db.batch();bt.update(db.collection("sk_payments").doc(id),{status:"approved"});bt.update(db.collection("sk_listings").doc(lid),u);await bt.commit()}
+  if(a==="pno"&&confirm("Reject this payment reference?"))await db.collection("sk_payments").doc(id).update({status:"rejected"})}catch(er){alert(er.message)}};
 </script></body></html>
